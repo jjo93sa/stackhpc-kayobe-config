@@ -134,7 +134,8 @@ Known issues
   <https://access.redhat.com/security/cve/CVE-2023-4001>`__, the operating
   system can become unbootable (boot will stop at a ``grub>`` prompt). Remove
   the ``--root-dev-only`` option from ``/boot/efi/EFI/rocky/grub.cfg`` after
-  applying package updates.
+  applying package updates. This will happen automatically as a post hook when
+  running the ``kayobe overcloud host package update`` command.
 
 Security baseline
 =================
@@ -868,6 +869,15 @@ To update all eligible packages, use ``*``, escaping if necessary:
 .. code-block:: console
 
    kayobe overcloud host package update --packages "*" --limit <host>
+
+.. note::
+
+   Due to a `security-related change in the GRUB package on Rocky Linux 9
+   <https://access.redhat.com/security/cve/CVE-2023-4001>`__, the operating
+   system can become unbootable (boot will stop at a ``grub>`` prompt). Remove
+   the ``--root-dev-only`` option from ``/boot/efi/EFI/rocky/grub.cfg`` after
+   applying package updates. This will happen automatically as a post hook when
+   running the ``kayobe overcloud host package update`` command.
 
 If the kernel has been upgraded, reboot the host or batch of hosts to pick up
 the change:
