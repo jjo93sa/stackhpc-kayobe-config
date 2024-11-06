@@ -124,16 +124,18 @@ configuration.
 Known issues
 ============
 
-* OVN breaks on Rocky 9 deployments where hostnames are FQDNs.
-  Before upgrading, you must make sure no compute or controller nodes have any
-  ``.`` characters in their hostnames. Run the command below to check:
+* Due to an incorrect default value NGS will attempt to use v3alpha for the api
+  path when communicating with etcd3. This isn't possible as in Caracal etcd is
+  running a newer version that has dropped support for v3alpha. You can work
+  around this in custom config, see the SMS PR for an example:
+  https://github.com/stackhpc/smslab-kayobe-config/pull/354
 
-  .. code-block:: bash
-
-     kayobe overcloud host command run --command "grep -v \'\.\' /etc/hostname" --show-output
-
-  There is currently no known fix for this issue aside from reprovisioning. A
-  patch will be developed soon.
+* Due to a `security-related change in the GRUB package on Rocky Linux 9
+  <https://access.redhat.com/security/cve/CVE-2023-4001>`__, the operating
+  system can become unbootable (boot will stop at a ``grub>`` prompt). Remove
+  the ``--root-dev-only`` option from ``/boot/efi/EFI/rocky/grub.cfg`` after
+  applying package updates. This will happen automatically as a post hook when
+  running the ``kayobe overcloud host package update`` command.
 
 Security baseline
 =================
@@ -187,10 +189,15 @@ to 3.12, then to 3.13 on Antelope before the Caracal upgrade. This upgrade
 should not cause an API outage (though it should still be considered "at
 risk").
 
+Some errors have been observed in testing when the upgrades are perfomed
+back-to-back. A 200s delay eliminates this issue. On particularly large or slow
+deployments, consider increasing this timeout.
+
 .. code-block:: bash
 
    kayobe overcloud service configuration generate --node-config-dir /tmp/ignore -kt none
    kayobe kolla ansible run "rabbitmq-upgrade 3.12"
+   sleep 200
    kayobe kolla ansible run "rabbitmq-upgrade 3.13"
 
 RabbitMQ quorum queues
@@ -862,6 +869,15 @@ To update all eligible packages, use ``*``, escaping if necessary:
 .. code-block:: console
 
    kayobe overcloud host package update --packages "*" --limit <host>
+
+.. note::
+
+   Due to a `security-related change in the GRUB package on Rocky Linux 9
+   <https://access.redhat.com/security/cve/CVE-2023-4001>`__, the operating
+   system can become unbootable (boot will stop at a ``grub>`` prompt). Remove
+   the ``--root-dev-only`` option from ``/boot/efi/EFI/rocky/grub.cfg`` after
+   applying package updates. This will happen automatically as a post hook when
+   running the ``kayobe overcloud host package update`` command.
 
 If the kernel has been upgraded, reboot the host or batch of hosts to pick up
 the change:
