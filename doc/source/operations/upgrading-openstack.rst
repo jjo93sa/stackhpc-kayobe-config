@@ -121,6 +121,13 @@ to ``default``. Whilst this does not have any negative impact on services
 that utilise Redis it will feature prominently in any preview of the overcloud
 configuration.
 
+AvailabilityZoneFilter removal
+------------------------------
+
+Support for the ``AvailabilityZoneFilter`` filter has been dropped in Nova.
+Remove it from any Nova config files before upgrading. It will cause errors in
+Caracal and halt the Nova scheduler.
+
 Known issues
 ============
 
