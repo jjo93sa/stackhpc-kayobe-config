@@ -137,6 +137,17 @@ Known issues
   applying package updates. This will happen automatically as a post hook when
   running the ``kayobe overcloud host package update`` command.
 
+* After upgrading OpenSearch to the latest 2023.1 container image, we have seen
+  cluster routing allocation be disabled on some systems. See bug for details:
+  https://bugs.launchpad.net/kolla-ansible/+bug/2085943.
+  This will cause the "Perform a flush" handler to fail during the 2024.1
+  OpenSearch upgrade. To workaround this, you can run the following PUT request
+  to enable allocation again:
+
+  ..code-block:: console
+
+    curl -X PUT "https://<kolla-vip>:9200/_cluster/settings?pretty" -H 'Content-Type: application/json' -d '{ "transient" : { "cluster.routing.allocation.enable" : "all" } } '
+
 Security baseline
 =================
 
