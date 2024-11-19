@@ -221,9 +221,13 @@ to 3.12, then to 3.13 on Antelope before the Caracal upgrade. This upgrade
 should not cause an API outage (though it should still be considered "at
 risk").
 
-Some errors have been observed in testing when the upgrades are perfomed
+Some errors have been observed in testing when the upgrades are performed
 back-to-back. A 200s delay eliminates this issue. On particularly large or slow
 deployments, consider increasing this timeout.
+
+Additionally errors have been observed at sites with OVS networking where after
+the upgrade, tenant networking is broken and requires a reset of RabbitMQ. This
+can be done by running the rabbitmq-reset playbook.
 
 .. code-block:: bash
 
