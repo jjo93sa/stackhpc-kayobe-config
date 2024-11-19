@@ -151,9 +151,23 @@ Known issues
   OpenSearch upgrade. To workaround this, you can run the following PUT request
   to enable allocation again:
 
-  ..code-block:: console
+  .. code-block:: console
 
-    curl -X PUT "https://<kolla-vip>:9200/_cluster/settings?pretty" -H 'Content-Type: application/json' -d '{ "transient" : { "cluster.routing.allocation.enable" : "all" } } '
+     curl -X PUT "https://<kolla-vip>:9200/_cluster/settings?pretty" -H 'Content-Type: application/json' -d '{ "transient" : { "cluster.routing.allocation.enable" : "all" } } '
+
+* Cinder database migrations fail during the upgrade process when the
+  ``use_quota`` column is set to ``NULL``, which can be the case on deleted
+  volumes and snapshots if OpenStack has been in operation for several
+  releases. See `Launchpad bug 2070475
+  <https://bugs.launchpad.net/cinder/+bug/2070475>`__ for details. Until the
+  `database migrations are fixed
+  <https://review.opendev.org/c/openstack/cinder/+/923635>`__, the data can be
+  fixed with the following MySQL queries:
+
+  .. code-block:: mysql
+
+     UPDATE volumes SET use_quota = 1 WHERE use_quota IS NULL AND deleted_at IS NOT NULL;
+     UPDATE snapshots SET use_quota = 1 WHERE use_quota IS NULL AND deleted_at IS NOT NULL;
 
 Security baseline
 =================
