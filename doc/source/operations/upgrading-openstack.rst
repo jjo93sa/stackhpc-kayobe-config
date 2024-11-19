@@ -225,6 +225,10 @@ Some errors have been observed in testing when the upgrades are perfomed
 back-to-back. A 200s delay eliminates this issue. On particularly large or slow
 deployments, consider increasing this timeout.
 
+Additionally errors have been observed at sites with OVS networking where after
+the upgrade, tenant networking is broken and requires a reset of RabbitMQ. This
+can be done by running the rabbitmq-reset playbook.
+
 .. code-block:: bash
 
    kayobe overcloud service configuration generate --node-config-dir /tmp/ignore -kt none
